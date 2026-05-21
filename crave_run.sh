@@ -37,7 +37,6 @@ echo ">>>> [STEP] Clean"
 # List the specific folders that cause issues for creek
 remove=(
     .repo/local_manifests
-    out/soong/.intermediates/system/core/init/
     hardware/qcom-caf/common
     hardware/qcom-caf/sm6225/*
     device/xiaomi/*
