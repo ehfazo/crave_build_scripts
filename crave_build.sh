@@ -9,22 +9,28 @@ if [ ! -f "crave.yaml" ]; then
 fi
 
 # Parse .env secrets from crave.yaml
+eval "$(
 awk '
-/^env:/ {inenv=1; next}
-/^[a-zA-Z]/ {inenv=0}
-inenv {
+/^env:/ {p=1; next}
+/^[a-zA-Z]/ {p=0}
+p {
     sub(/^[[:space:]]+/, "")
-    if ($0 ~ /^[A-Za-z_]/) {
-        split($0,a,":")
-        key=a[1]
-        sub(/^[^:]+:[[:space:]]*"?/, "")
-        sub(/"?$/, "")
-        print "" key "=\"" $0 "\""
-    } else {
-        print
+
+    # Skip comments and empty lines
+    if ($0 ~ /^#/ || $0 == "") {
+        next
     }
+
+    split($0,a,":")
+    key=a[1]
+
+    sub(/^[^:]+:[[:space:]]*"?/, "")
+    sub(/"?$/, "")
+
+    printf("export %s=\"%s\"\n", key, $0)
 }
 ' crave.yaml
+)"
 
 # 2. Define the notification function properly
 send_telegram() {
