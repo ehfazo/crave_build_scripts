@@ -3,15 +3,28 @@
 # Optional: ensure we are in correct directory
 cd "$(dirname "$0")"
 
-if [ ! -f ".env" ]; then
-    echo "⚠️ .env file not found!"
+if [ ! -f "crave.yaml" ]; then
+    echo "❌ Error: crave.yaml not found!"
     exit 1
 fi
 
-# Load local secrets
-set -a
-source .env
-set +a
+# Parse .env secrets from crave.yaml
+awk '
+/^env:/ {inenv=1; next}
+/^[a-zA-Z]/ {inenv=0}
+inenv {
+    sub(/^[[:space:]]+/, "")
+    if ($0 ~ /^[A-Za-z_]/) {
+        split($0,a,":")
+        key=a[1]
+        sub(/^[^:]+:[[:space:]]*"?/, "")
+        sub(/"?$/, "")
+        print "export " key "=\"" $0 "\""
+    } else {
+        print
+    }
+}
+' crave.yaml
 
 # 2. Define the notification function properly
 send_telegram() {
@@ -27,10 +40,6 @@ send_telegram() {
         --data-urlencode "disable_web_page_preview=true" \
         --data-urlencode "text=${FINAL_TEXT}" >/dev/null
 }
-
-# Load build configurations
-curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/build_config.sh -o build_config.sh
-source build_config.sh
 
 # Fetch and load the funny messages from another file
 curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/messages.sh -o messages.sh
