@@ -19,7 +19,7 @@ inenv {
         key=a[1]
         sub(/^[^:]+:[[:space:]]*"?/, "")
         sub(/"?$/, "")
-        print "export " key "=\"" $0 "\""
+        print "" key "=\"" $0 "\""
     } else {
         print
     }
