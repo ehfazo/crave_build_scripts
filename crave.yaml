@@ -1,0 +1,37 @@
+# Crave Configuration for POCO M7 (creek)
+project: "<PROJECT NAME: FROM CRAVE LIST>"
+branch: "<GITHUB BRANCH FOR TREE>"
+device: "<DEVICE CODENAME>"
+
+build:
+  # Using all available cores on the linux64 platform
+  extra_args: "-j$(nproc --all)"
+
+env:
+  # Adjusted to your local time in Ajman
+  TZ: "<YOUR TIMEZONE>"
+
+  # Secure Key Signing Variables (Optional for custom signature)
+  BUCKET_NAME: "<YOUR BUCKET NAME>"
+  KEY_ENCRYPTION_PASSWORD: "<YOUR ENCRYPTION PASSWORD>"
+  BKEY_ID: "<YOUR BUCKET KEY ID>"
+  BAPP_KEY: "<YOUR BUCKET APPLICATION KEY>"
+
+  # Telegram Notifications Configuration
+  TG_TOKEN: "<YOUR BOT TOKEN>"
+  TG_CHAT_ID: "<YOUR TELEGRAM GROUP OR CHANNEL ID>"
+
+  # Pixeldrain Uploads Configuration
+  PIXELDRAIN_API_KEY: "<YOUR PIXELDRAIN API>"
+
+  # Custom Build Variables (optional based on your script)
+  ROM_NAME: "lineage"
+  DEVICE: "<DEVICE CODENAME>"
+  RELEASE: "<RELEASE TYPE>"
+  BUILD_TYPE: "<BUILD TYPE>"
+  BUILD_FLAVOUR: "<FLAVOR>"
+  ANDROID_VERSION: "<ANDROID_VERSION>"
+  PROJECT_VERSION: "<PROJECT_VERSION>"
+
+  # Web url for ota config if support OTA.
+  OTA_URL: "<replace with your ota device.json web url>"
