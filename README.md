@@ -21,6 +21,8 @@ These scripts handle the entire lifecycle of a build: from environment preparati
 You must have a **Crave.io** account and the `crave` CLI tool configured on your local machine or devspace.
 
 ### 2. Secrets Management
+This section should be depending on the script we use. By default crave supports option 2
+#### OPTION 1
 Create a `.env` file in your project root. **Never commit this file to GitHub.**
 
 ```env
@@ -31,6 +33,49 @@ PIXELDRAIN="your_pixeldrain_api_key"
 *   **TG_TOKEN** will be used to integrate your telegram bot to your script.
 *   **TG_CHAT** is the telegram chat_id to which you want to send telegram notifications.
 *   **PIXELDRAIN** is your pixeldrain api. This is required to upload your files from the crave out after successful build.
+
+#### OPTION 2
+You can also set the crave to load the crave.yaml by deafult instead of setting up the .env file. For this you have to keep the crave.yaml file in the root project directory.
+example of crave.yaml is as follows
+```
+# Crave Configuration for POCO M7 (creek)
+project: "<PROJECT NAME: FROM CRAVE LIST>"
+branch: "<GITHUB BRANCH FOR TREE>"
+device: "<DEVICE CODENAME>"
+
+build:
+  # Using all available cores on the linux64 platform
+  extra_args: "-j$(nproc --all)"
+
+env:
+  # Adjusted to your local time in Ajman
+  TZ: "<YOUR TIMEZONE>"
+
+  # Secure Key Signing Variables (Optional for custom signature)
+  BUCKET_NAME: "<YOUR BUCKET NAME>"
+  KEY_ENCRYPTION_PASSWORD: "<YOUR ENCRYPTION PASSWORD>"
+  BKEY_ID: "<YOUR BUCKET KEY ID>"
+  BAPP_KEY: "<YOUR BUCKET APPLICATION KEY>"
+
+  # Telegram Notifications Configuration
+  TG_TOKEN: "<YOUR BOT TOKEN>"
+  TG_CHAT_ID: "<YOUR TELEGRAM GROUP OR CHANNEL ID>"
+
+  # Pixeldrain Uploads Configuration
+  PIXELDRAIN_API_KEY: "<YOUR PIXELDRAIN API>"
+
+  # Custom Build Variables (optional based on your script)
+  ROM_NAME: "lineage"
+  DEVICE: "<DEVICE CODENAME>"
+  RELEASE: "<RELEASE TYPE>"
+  BUILD_TYPE: "<BUILD TYPE>"
+  BUILD_FLAVOUR: "<FLAVOR>"
+  ANDROID_VERSION: "<ANDROID_VERSION>"
+  PROJECT_VERSION: "<PROJECT_VERSION>"
+
+  # Web url for ota config if support OTA.
+  OTA_URL: "<replace with your ota device.json web url>"
+```
 
 ### 3. Setting Build Configurations
 By editing the **build_config.sh**, you can change the container time zone to your timezone, define the basic details of your build.
