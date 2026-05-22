@@ -61,24 +61,47 @@ send_telegram "$RANDOM_MSG"
 LOG_FILE="crave_build.log"
 rm -f "$LOG_FILE"
 
-# Run your GitHub-hosted script
-echo "🚀 Starting remote build queue..."
-crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/crave_run.sh | bash' 2>&1 | tee $LOG_FILE
-echo "🏁 Crave execution finished. Analyzing logs..."
+# ================= CRAVE QUEUE & RETRY LOGIC =================
+MAX_ATTEMPTS=3
+ATTEMPT=1
+DELAY_TIME="1m" # 1 minutes delay
+while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+    echo "🚀 Starting remote build queue (Attempt $ATTEMPT of $MAX_ATTEMPTS)..."
+    
+    # Run the crave command
+    crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/crave_run.sh | bash' 2>&1 | tee $LOG_FILE
 
-# Check if the script ever reached your custom execution environment
-if [ ! -f "$LOG_FILE" ]; then
-    echo "❌ Log file not found! Unable to verify container execution."
-    ERROR_TEXT="🚨 ALERT: Build script failed to start!"
-    send_telegram "$ERROR_TEXT"
-    exit 1
-else
-    if grep -q "Setting up workspace" "$LOG_FILE"; then
-        echo "✅ Container successfully initialized and ran the build environment."
+    # Capture the pipeline status thanks to set -o pipefail
+    CRAVE_STATUS=${PIPESTATUS[0]}
+
+    if [ $CRAVE_STATUS -eq 0 ]; then
+        echo "✅ Crave execution completed successfully!"
+        break
     else
-        echo "❌ Rejection or termination detected before container setup!"
-        # Build Queue termination notification
-        TERMINATION_TEXT="🚨 ALERT: Build terminated before running your script!"
-        send_telegram "$TERMINATION_TEXT"
+        echo "⚠️ Crave run failed or was rejected with exit code $CRAVE_STATUS."
+        if [ ! -f "$LOG_FILE" ]; then
+            echo "❌ Log file not found! Unable to verify container execution."
+            ERROR_TEXT="🚨 ALERT: Build script failed to start entirely!"
+            send_telegram "$ERROR_TEXT"
+            exit 1
+        else
+            if grep -q "Setting up workspace" "$LOG_FILE"; then
+                echo "✅ Container successfully initialized and ran the build environment."
+            else
+                echo "❌ Rejection or termination detected before container setup!"
+                TERMINATION_TEXT="🚨 ALERT: Build rejected before setup! Retrying attempt $((ATTEMPT + 1))..."
+                send_telegram "$TERMINATION_TEXT"
+                if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                    echo "🕒 Waiting $DELAY_TIME before retrying automatically..."
+                    sleep $DELAY_TIME
+                    ((ATTEMPT++))
+                else
+                    echo "❌ All $MAX_ATTEMPTS build attempts have failed."
+                    TERMINATION_TEXT="🚨 ALERT: Build terminated! All ${ATTEMPT} attempts exhausted."
+                    send_telegram "$TERMINATION_TEXT"
+                    break
+                fi
+            fi
+        fi
     fi
-fi
+done
