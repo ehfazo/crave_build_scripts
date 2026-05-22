@@ -21,8 +21,9 @@ sudo ln -s /usr/share/zoneinfo/${TZ} /etc/localtime
 echo "🕒 Current system time: $(date)"
 
 # ================= CONFIGS =================
-curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/build_config.sh -o build_config.sh
-source build_config.sh
+curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/uploads_logic.sh -o uploads_logic.sh
+source uploads_logic.sh
+rm -rf build_config.sh
 
 # ================= BUILD START =================
 tg_send "┌───────────────────┐
