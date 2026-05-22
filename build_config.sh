@@ -1,9 +1,3 @@
-# ================= TIMEZONE =================
-echo "🕒 Switching system timezone to Gulf Standard Time"
-sudo rm -f /etc/localtime
-sudo ln -s /usr/share/zoneinfo/Asia/Dubai /etc/localtime
-echo "🕒 Current system time: $(date)"
-
 # ================= JQ =================
 if ! command -v jq &> /dev/null; then
     mkdir -p ~/bin
