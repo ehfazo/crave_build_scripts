@@ -3,10 +3,6 @@ project: "<PROJECT NAME: FROM CRAVE LIST>"
 branch: "<GITHUB BRANCH FOR TREE>"
 device: "<DEVICE CODENAME>"
 
-build:
-  # Using all available cores on the linux64 platform
-  extra_args: "-j$(nproc --all)"
-
 env:
   # Adjusted to your local time in Ajman
   TZ: "<YOUR TIMEZONE>"
