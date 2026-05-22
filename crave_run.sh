@@ -21,7 +21,11 @@ sudo ln -s /usr/share/zoneinfo/${TZ} /etc/localtime
 echo "🕒 Current system time: $(date)"
 
 # ================= CONFIGS =================
-curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/uploads_logic.sh -o uploads_logic.sh
+if [ ! -f "uploads_logic.sh" ]; then
+    echo "Fetching uploads_logic.sh"
+    curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/uploads_logic.sh -o uploads_logic.sh
+fi
+echo "Loading uploads_logic.sh"
 source uploads_logic.sh
 rm -rf build_config.sh
 
@@ -101,95 +105,10 @@ tg_send "🔄 _Synchronization took ${SYNC_TIME}_
 set -o pipefail
 mka bacon 2>&1 | tee "$BUILD_LOG"
 
-if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-    on_fail
+# ============ POST SCRIPT UPLOADS ============
+if [ ! -f "upload_script.sh" ]; then
+    echo "Fetching upload_script.sh"
+    curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/upload_script.sh -o upload_script.sh
 fi
-
-if grep -q -E "ninja failed|failed to build some targets" "$BUILD_LOG"; then
-    on_fail
-fi
-
-# ================= SUCCESS =================
-END_TIME=$(date +%s)
-DUR=$((END_TIME - START_TIME))
-
-if [ $DUR -ge 3600 ]; then
-    BUILD_TIME="$((DUR/3600))h $(((DUR%3600)/60))min"
-else
-    BUILD_TIME="$((DUR/60)) min"
-fi
-
-ROM_ZIP=$(ls -t ${OUT_DIR}/*.zip 2>/dev/null | head -n 1)
-
-if [ -n "$ROM_ZIP" ]; then
-    BUILD_ID=$(basename "$ROM_ZIP" .zip)
-    ROM_SIZE=$(du -h "$ROM_ZIP" | awk '{print $1}')
-
-    tg_send "┌───────────────────┐
-    ✧ _Buildbot finished its job_ ✧
-└───────────────────┘
-🆔: \`${BUILD_ID}\`
-📦 Size: *${ROM_SIZE}*
-⏳ _Compilation took ${BUILD_TIME}_"
-
-    tg_send "🚨 _Compiler gave up arguing. Uploading artifacts🥃…_"
-fi
-
-# ================= UPLOAD =================
-echo ">>>> [STEP] Upload Artifacts"
-
-HEADER_MSG="✧ ${ROM_NAME} Artifacts ✧
-────────────────
-🧩 ${DEVICE} | ${BUILD_TYPE} | ${ANDROID_VERSION}
-🆔: \`${BUILD_ID}\`
-"
-
-UPLOAD_MSG=""
-IMG_MSG=""
-
-# ROM
-if [ -n "$ROM_ZIP" ]; then
-    GO_URL=$(gofile_upload "$ROM_ZIP")
-    PD_URL=$(pixeldrain_upload "$ROM_ZIP")
-
-    UPLOAD_MSG="${UPLOAD_MSG}
-⋄ [GoFile](${GO_URL})
-⋄ [PixelDrain](${PD_URL})
-"
-fi
-
-# IMAGES
-for IMG in boot.img vendor_boot.img init_boot.img super_empty.img recovery.img; do
-    FILE="${OUT_DIR}/${IMG}"
-
-    if [ -f "$FILE" ]; then
-        GO_URL=$(gofile_upload "$FILE")
-
-        IMG_MSG="${IMG_MSG}
-⋄ [${IMG}](${GO_URL})"
-    fi
-done
-
-# OTA
-OTA_JSON="${OUT_DIR}/GMS/${DEVICE}.json"
-
-if [ -f "$OTA_JSON" ]; then
-    GO_URL=$(gofile_upload "$OTA_JSON")
-
-    IMG_MSG="${IMG_MSG}
-
-╭─ 📜 JSON
-⋄ [OTA JSON](${GO_URL})"
-fi
-
-if [ -n "$IMG_MSG" ]; then
-    IMG_MSG="╭─ 🧩 IMAGES${IMG_MSG}"
-fi
-
-FINAL_MESSAGE="${HEADER_MSG}${UPLOAD_MSG}${IMG_MSG}"
-
-tg_upload "$FINAL_MESSAGE"
-
-if [ -n "$ROM_ZIP" ]; then
-    tg_send "🥀 _Artifacts released into the wild._"
-fi
+echo "Loading upload_script.sh"
+source upload_script.sh
