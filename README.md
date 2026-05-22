@@ -90,7 +90,7 @@ Message>"
 ### 5. Running the Build
 To start a build inside the crave, execute the following command in your crave-devspaces terminal:
 ```
-curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/blob/lineage-23.2/crave_build.sh | bash
+curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/blob/lineage-23.2/crave_build.sh | bash
 ```
 Don't forget to replace the above script link with your own.
 

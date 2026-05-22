@@ -7,7 +7,7 @@ echo "🕒 Current system time: $(date)"
 # ================= CONFIGS =================
 if [ ! -f "uploads_logic.sh" ]; then
     echo "Fetching uploads_logic.sh"
-    curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/uploads_logic.sh -o uploads_logic.sh
+    curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/config/uploads_logic.sh -o uploads_logic.sh
 fi
 echo "Loading uploads_logic.sh"
 source uploads_logic.sh

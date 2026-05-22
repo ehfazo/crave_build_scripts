@@ -28,7 +28,7 @@ send_telegram() {
 }
 
 # Fetch and load the funny messages from another file
-curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/messages.sh -o messages.sh
+curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/config/messages.sh -o messages.sh
 source messages.sh
 
 # Pick a random index
@@ -49,7 +49,7 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     echo "🚀 Starting remote build queue (Attempt $ATTEMPT of $MAX_ATTEMPTS)..."
     
     # Run the crave command
-    crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/crave_run.sh | bash' 2>&1 | tee $LOG_FILE
+    crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_run.sh | bash' 2>&1 | tee $LOG_FILE
 
     # Capture the pipeline status thanks to set -o pipefail
     CRAVE_STATUS=${PIPESTATUS[0]}
