@@ -1,33 +1,24 @@
 # Crave Configuration for POCO M7 (creek)
-project: "<PROJECT NAME: FROM CRAVE LIST>"
-branch: "<GITHUB BRANCH FOR TREE>"
-device: "<DEVICE CODENAME>"
+project: "LOS 21.1"
+branch: "lineage-23.2"
+device: "creek"
 
 env:
   # Adjusted to your local time in Ajman
-  TZ: "<YOUR TIMEZONE>"
-
-  # Secure Key Signing Variables (Optional for custom signature)
-  BUCKET_NAME: "<YOUR BUCKET NAME>"
-  KEY_ENCRYPTION_PASSWORD: "<YOUR ENCRYPTION PASSWORD>"
-  BKEY_ID: "<YOUR BUCKET KEY ID>"
-  BAPP_KEY: "<YOUR BUCKET APPLICATION KEY>"
+  TZ: "UTC"
 
   # Telegram Notifications Configuration
-  TG_TOKEN: "<YOUR BOT TOKEN>"
-  TG_CHAT: "<YOUR TELEGRAM GROUP OR CHANNEL ID>"
+  TG_TOKEN: "8669531287:AAGBXlFR_A5LlhJ7vxh2E7dWRYA7w8N0AQc"
+  TG_CHAT: "-1003688532422"
 
   # Pixeldrain Uploads Configuration
-  PIXELDRAIN: "<YOUR PIXELDRAIN API>"
+  PIXELDRAIN: "e56e9fbc-e680-4c3c-886a-d2cfebf11a0b"
 
   # Custom Build Variables (optional based on your script)
   ROM_NAME: "lineage"
-  DEVICE: "<DEVICE CODENAME>"
-  RELEASE: "<RELEASE TYPE>"
-  BUILD_TYPE: "<BUILD TYPE>"
-  BUILD_FLAVOUR: "<FLAVOR>"
-  ANDROID_VERSION: "<ANDROID_VERSION>"
-  PROJECT_VERSION: "<PROJECT_VERSION>"
-
-  # Web url for ota config if support OTA.
-  OTA_URL: "<replace with your ota device.json web url>"
+  DEVICE: "creek"
+  RELEASE: "trunk_staging"
+  BUILD_TYPE: "userdebug"
+  BUILD_FLAVOUR: "vanilla"
+  ANDROID_VERSION: "v16 QPR2"
+  PROJECT_VERSION: "LOS 23.2"

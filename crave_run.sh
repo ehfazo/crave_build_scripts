@@ -17,7 +17,7 @@ set +o allexport
 # ================= CONFIG =================
 if [ ! -f "build_header.sh" ]; then
     echo "Fetching build_header.sh"
-    curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/build_header.sh -o build_header.sh
+    curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/config/build_header.sh -o build_header.sh
 fi
 echo "Loading build_header.sh"
 source build_header.sh
@@ -45,7 +45,7 @@ echo ">>>> [STEP] Repo Init"
 repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs
 
 echo ">>>> [STEP] Local Manifests"
-git clone https://github.com/nuruszama/local_manifest.git -b lineage-23.2 .repo/local_manifests
+git clone https://github.com/ehfazo/local_manifest.git -b lineage-23.2 .repo/local_manifests
 
 echo ">>>> [STEP] Repo Sync"
 SYNC_START=$(date +%s)
@@ -73,7 +73,7 @@ source build/envsetup.sh
 
 echo ">>>> [STEP] Lunch"
 lunch ${ROM_NAME}_${DEVICE}-${RELEASE}-${BUILD_TYPE}
-export BUILD_USERNAME=nuruszama
+export BUILD_USERNAME=ehfazo
 export BUILD_HOSTNAME=arch
 make installclean
 
@@ -87,7 +87,7 @@ mka bacon 2>&1 | tee "$BUILD_LOG"
 # ============ POST SCRIPT UPLOADS ============
 if [ ! -f "upload_script.sh" ]; then
     echo "Fetching upload_script.sh"
-    curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/upload_script.sh -o upload_script.sh
+    curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/config/upload_script.sh -o upload_script.sh
 fi
 echo "Loading upload_script.sh"
 source upload_script.sh
