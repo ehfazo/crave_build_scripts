@@ -19,10 +19,10 @@ env:
 
   # Telegram Notifications Configuration
   TG_TOKEN: "<YOUR BOT TOKEN>"
-  TG_CHAT_ID: "<YOUR TELEGRAM GROUP OR CHANNEL ID>"
+  TG_CHAT: "<YOUR TELEGRAM GROUP OR CHANNEL ID>"
 
   # Pixeldrain Uploads Configuration
-  PIXELDRAIN_API_KEY: "<YOUR PIXELDRAIN API>"
+  PIXELDRAIN: "<YOUR PIXELDRAIN API>"
 
   # Custom Build Variables (optional based on your script)
   ROM_NAME: "lineage"
