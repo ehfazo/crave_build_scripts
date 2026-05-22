@@ -14,12 +14,6 @@ set -o allexport
 source .env
 set +o allexport
 
-# ================= TIMEZONE =================
-echo "🕒 Switching system timezone"
-sudo rm -f /etc/localtime
-sudo ln -s /usr/share/zoneinfo/${TZ} /etc/localtime
-echo "🕒 Current system time: $(date)"
-
 # ================= CONFIGS =================
 if [ ! -f "uploads_logic.sh" ]; then
     echo "Fetching uploads_logic.sh"
