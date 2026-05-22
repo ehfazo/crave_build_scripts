@@ -57,6 +57,28 @@ RANDOM_MSG=${MESSAGES[$RANDOM % ${#MESSAGES[@]}]}
 # Build Queue notification
 send_telegram "$RANDOM_MSG"
 
+# set the container log file
+LOG_FILE="crave_build.log"
+rm -f "$LOG_FILE"
+
 # Run your GitHub-hosted script
 echo "🚀 Starting remote build queue..."
-crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/crave_run.sh | bash'
+crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/crave_run.sh | bash' 2>&1 | tee $LOG_FILE
+echo "🏁 Crave execution finished. Analyzing logs..."
+
+# Check if the script ever reached your custom execution environment
+if [ ! -f "$LOG_FILE" ]; then
+    echo "❌ Log file not found! Unable to verify container execution."
+    ERROR_TEXT="🚨 ALERT: Build script failed to start!"
+    send_telegram "$ERROR_TEXT"
+    exit 1
+else
+    if grep -q "Setting up workspace" "$LOG_FILE"; then
+        echo "✅ Container successfully initialized and ran the build environment."
+    else
+        echo "❌ Rejection or termination detected before container setup!"
+        # Build Queue termination notification
+        TERMINATION_TEXT="🚨 ALERT: Build terminated before running your script!"
+        send_telegram "$TERMINATION_TEXT"
+    fi
+fi
