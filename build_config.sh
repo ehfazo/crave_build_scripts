@@ -1,11 +1,3 @@
-ROM_NAME="lineage"
-DEVICE="creek"
-RELEASE="trunk_staging"
-BUILD_TYPE="userdebug"
-BUILD_FLAVOUR="vanilla"
-ANDROID_VERSION="v16 QPR2"
-PROJECT_VERSION="LOS 23.2"
-
 # ================= TIMEZONE =================
 echo "🕒 Switching system timezone to Gulf Standard Time"
 sudo rm -f /etc/localtime
