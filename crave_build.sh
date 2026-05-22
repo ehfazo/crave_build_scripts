@@ -3,36 +3,16 @@
 # Optional: ensure we are in correct directory
 cd "$(dirname "$0")"
 
-if [ ! -f "crave.yaml" ]; then
-    echo "❌ Error: crave.yaml not found!"
+# Check if .env file exists
+if [ ! -f ".env" ]; then
+    echo "⚠️ .env file not found!"
     exit 1
 fi
 
-# Parse .env secrets from crave.yaml
-eval "$(
-awk '
-/^env:/ {p=1; next}
-/^[a-zA-Z]/ {p=0}
-p {
-    sub(/^[[:space:]]+/, "")
+# Load your local secrets
+source .env
 
-    # Skip comments and empty lines
-    if ($0 ~ /^#/ || $0 == "") {
-        next
-    }
-
-    split($0,a,":")
-    key=a[1]
-
-    sub(/^[^:]+:[[:space:]]*"?/, "")
-    sub(/"?$/, "")
-
-    printf("export %s=\"%s\"\n", key, $0)
-}
-' crave.yaml
-)"
-
-# 2. Define the notification function properly
+# Define the notification function properly
 send_telegram() {
     local FOOTER=".
     
