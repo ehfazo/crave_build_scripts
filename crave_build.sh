@@ -57,6 +57,13 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     if [ $CRAVE_STATUS -eq 0 ]; then
         echo "✅ Crave execution completed successfully!"
         break
+        
+    elif [ $CRAVE_STATUS -eq 130 ]; then
+        # ⚠️ CANCELLED BY USER
+        ERROR_TEXT="<b>Build Cancelled:</b> User terminated the process manually."
+        send_telegram "$ERROR_TEXT"
+        exit 1
+        
     else
         echo "⚠️ Crave run failed or was rejected with exit code $CRAVE_STATUS."
         
