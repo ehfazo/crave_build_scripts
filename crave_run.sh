@@ -14,16 +14,7 @@ set -o allexport
 source .env
 set +o allexport
 
-# ================= CONFIGS =================
-if [ ! -f "uploads_logic.sh" ]; then
-    echo "Fetching uploads_logic.sh"
-    curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/uploads_logic.sh -o uploads_logic.sh
-fi
-echo "Loading uploads_logic.sh"
-source uploads_logic.sh
-rm -rf build_config.sh
-
-# =============== BUILD HEADERS ===============
+# ================= CONFIG =================
 if [ ! -f "build_header.sh" ]; then
     echo "Fetching build_header.sh"
     curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/build_header.sh -o build_header.sh
