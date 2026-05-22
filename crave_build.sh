@@ -79,28 +79,35 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
         break
     else
         echo "⚠️ Crave run failed or was rejected with exit code $CRAVE_STATUS."
+        
         if [ ! -f "$LOG_FILE" ]; then
             echo "❌ Log file not found! Unable to verify container execution."
-            ERROR_TEXT="🚨 ALERT: Build script failed to start entirely!"
+            ERROR_TEXT="🚨 ALERT: Build script failed to start! Check the setup"
             send_telegram "$ERROR_TEXT"
             exit 1
+        fi
+
+        if grep -q "Setting up workspace" "$LOG_FILE"; then
+            # Case A: The container started fine, but compilation failed later. 
+            # Do NOT retry automatically; you need to inspect actual build logs.
+            echo "✅ Container initialized but compilation failed downstream."
+            break
         else
-            if grep -q "Setting up workspace" "$LOG_FILE"; then
-                echo "✅ Container successfully initialized and ran the build environment."
-            else
-                echo "❌ Rejection or termination detected before container setup!"
+            # Case B: The container was rejected or dropped out before setting up.
+            echo "❌ Rejection or termination detected before container setup!"
+            
+            if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                echo "🕒 Waiting $DELAY_TIME before retrying automatically..."
                 TERMINATION_TEXT="🚨 ALERT: Build rejected before setup! Retrying attempt $((ATTEMPT + 1))..."
                 send_telegram "$TERMINATION_TEXT"
-                if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                    echo "🕒 Waiting $DELAY_TIME before retrying automatically..."
-                    sleep $DELAY_TIME
-                    ((ATTEMPT++))
-                else
-                    echo "❌ All $MAX_ATTEMPTS build attempts have failed."
-                    TERMINATION_TEXT="🚨 ALERT: Build terminated! All ${ATTEMPT} attempts exhausted."
-                    send_telegram "$TERMINATION_TEXT"
-                    break
-                fi
+                    
+                sleep $DELAY_TIME
+                ((ATTEMPT++)) # Safely move to next attempt loop
+            else
+                echo "❌ All $MAX_ATTEMPTS build attempts have failed."
+                TERMINATION_TEXT="🚨 ALERT: Build terminated! All ${ATTEMPT} attempts completely exhausted."
+                send_telegram "$TERMINATION_TEXT"
+                break
             fi
         fi
     fi
