@@ -14,6 +14,12 @@ set -o allexport
 source .env
 set +o allexport
 
+# ================= TIMEZONE =================
+echo "🕒 Switching system timezone"
+sudo rm -f /etc/localtime
+sudo ln -s /usr/share/zoneinfo/${TZ} /etc/localtime
+echo "🕒 Current system time: $(date)"
+
 # ================= CONFIGS =================
 curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/build_config.sh -o build_config.sh
 source build_config.sh
