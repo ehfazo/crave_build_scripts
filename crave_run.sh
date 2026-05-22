@@ -29,20 +29,6 @@ echo "Loading uploads_logic.sh"
 source uploads_logic.sh
 rm -rf build_config.sh
 
-# ================= BUILD START =================
-tg_send "┌───────────────────┐
-  📢      *Buildbot* initialized      📢
-└───────────────────┘
-
-      🧬 *${PROJECT_VERSION}*     🧩 *${DEVICE}*
-
- *Android Version:  ${ANDROID_VERSION}*
- *Build Type:  ${BUILD_TYPE}*
- *Release:  ${RELEASE}*
- *Flavor:  ${BUILD_FLAVOUR}*
-
-🌏 _$(date +"%d %b %Y %I:%M %p GST")_"
-
 # ================= BUILD =================
 echo ">>>> [STEP] Clean"
 # List the specific folders that cause issues for creek
