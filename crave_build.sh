@@ -48,7 +48,7 @@ send_telegram() {
 }
 
 # Fetch and load the funny messages from another file
-curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/messages.sh -o messages.sh
+curl -sf https://raw.githubusercontent.com/nuruszama/crave_build_scripts/lineage-23.2/config/messages.sh -o messages.sh
 source messages.sh
 
 # Pick a random index
