@@ -7,10 +7,13 @@ BUILD_SCRIPT_URL="https://raw.githubusercontent.com/ehfazo/crave_build_scripts/l
 # Self-daemonize: if not already in bg, re-launch with nohup
 if [ "${DAEMONIZED:-0}" = "0" ] && [ ! -f ".crave_bg" ]; then
     touch .crave_bg
-    DAEMONIZED=1 nohup bash -c "$(curl -sf "$BUILD_SCRIPT_URL")" > "$BUILD_LOG" 2> "$ERROR_LOG" &
+    curl -sfL "$BUILD_SCRIPT_URL" -o /tmp/crave_build_daemon.sh
+    chmod +x /tmp/crave_build_daemon.sh
+    DAEMONIZED=1 nohup /tmp/crave_build_daemon.sh > "$BUILD_LOG" 2> "$ERROR_LOG" &
     echo "🚀 Build launched in background (PID $!)"
     echo "📄 Tail logs: tail -f $BUILD_LOG"
     echo "❌ Tail errors: tail -f $ERROR_LOG"
+    rm -f /tmp/crave_build_daemon.sh
     exit 0
 fi
 rm -f .crave_bg
