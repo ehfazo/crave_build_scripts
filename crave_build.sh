@@ -23,7 +23,6 @@ if [ "${DAEMONIZED:-0}" = "0" ] && ! sentinel_alive; then
     echo "🚀 Build launched in background (PID $!)"
     echo "📄 Tail logs: tail -f $BUILD_LOG"
     echo "❌ Tail errors: tail -f $ERROR_LOG"
-    rm -f /tmp/crave_build_daemon.sh
     exit 0
 fi
 trap 'rm -f "$SENTINEL"' EXIT
@@ -66,85 +65,24 @@ fi
 # Build Queue notification
 send_telegram "$RANDOM_MSG"
 
-# ================= DELAY BEFORE BUILD =================
-START_DELAY=600
-send_telegram "⏳ *Build will start in ${START_DELAY}s* — you have time to push fixes."
+# ================= CRAVE QUEUE =================
 echo "┌────────────────────────────────────────────────────────────┐"
-echo "│  ⏳ Build starts in ${START_DELAY}s. Push fixes now!       │"
+echo "│    🚀 Starting remote build queue...                       │"
 echo "└────────────────────────────────────────────────────────────┘"
-for ((i=START_DELAY; i>0; i-=60)); do
-    echo "  ${i}s remaining..."
-    sleep 60
-done
-sleep $((START_DELAY % 60))
 
-# ================= CRAVE QUEUE & RETRY LOGIC =================
-MAX_ATTEMPTS=3
-ATTEMPT=1
-RETRY_DELAY=600
-while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_run.sh | bash' >> "$BUILD_LOG" 2>&1
+
+CRAVE_STATUS=$?
+
+if [ $CRAVE_STATUS -eq 0 ]; then
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│    🚀 Starting remote build queue (Attempt $ATTEMPT of $MAX_ATTEMPTS)...│"
+    echo "│         ✅ Crave execution completed successfully!         │"
     echo "└────────────────────────────────────────────────────────────┘"
-    
-    # Run the crave command (all output goes to BUILD_LOG)
-    crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_run.sh | bash' >> "$BUILD_LOG" 2>&1
-
-    CRAVE_STATUS=$?
-
-    if [ $CRAVE_STATUS -eq 0 ]; then
-        echo "┌────────────────────────────────────────────────────────────┐"
-        echo "│         ✅ Crave execution completed successfully!         │"
-        echo "└────────────────────────────────────────────────────────────┘"
-        break
-        
-    elif [ $CRAVE_STATUS -eq 130 ]; then
-        ERROR_TEXT="*Build Cancelled:* User terminated the process manually."
-        send_telegram "$ERROR_TEXT"
-        exit 1
-        
-    else
-        echo "⚠️ Crave run failed or was rejected with exit code $CRAVE_STATUS."
-        
-        if [ ! -f "$BUILD_LOG" ]; then
-            echo "┌────────────────────────────────────────────────────────────┐"
-            echo "│   ❌ Log file not found! Unable to verify container exec. │"
-            echo "└────────────────────────────────────────────────────────────┘"
-            ERROR_TEXT="🚨 ALERT: Build script failed to start! Check the setup"
-            send_telegram "$ERROR_TEXT"
-            exit 1
-        fi
-
-        if grep -q "Setting up workspace" "$BUILD_LOG"; then
-            echo "┌────────────────────────────────────────────────────────────┐"
-            echo "│  ✅ Container initialized but compilation failed downstream│"
-            echo "└────────────────────────────────────────────────────────────┘"
-            break
-        else
-            echo "┌────────────────────────────────────────────────────────────┐"
-            echo "│  ❌ Rejection or termination detected before setup!        │"
-            echo "└────────────────────────────────────────────────────────────┘"
-            
-            if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                echo "┌────────────────────────────────────────────────────────────┐"
-                echo "│  🕒 Waiting ${RETRY_DELAY}s before retrying...                │"
-                echo "└────────────────────────────────────────────────────────────┘"
-                TERMINATION_TEXT="🚨 ALERT: Build rejected before setup! Retrying attempt $((ATTEMPT + 1)) in ${RETRY_DELAY}s..."
-                send_telegram "$TERMINATION_TEXT"
-                for ((i=RETRY_DELAY; i>0; i-=60)); do
-                    echo "  ${i}s remaining..."
-                    sleep 60
-                done
-                sleep $((RETRY_DELAY % 60))
-                ((ATTEMPT++))
-            else
-                echo "┌────────────────────────────────────────────────────────────┐"
-                echo "│     ❌ All $MAX_ATTEMPTS build attempts have failed.        │"
-                echo "└────────────────────────────────────────────────────────────┘"
-                TERMINATION_TEXT="🚨 ALERT: Build terminated! All ${ATTEMPT} attempts completely exhausted."
-                send_telegram "$TERMINATION_TEXT"
-                break
-            fi
-        fi
-    fi
-done
+elif [ $CRAVE_STATUS -eq 130 ]; then
+    send_telegram "*Build Cancelled:* User terminated the process manually."
+    exit 1
+else
+    echo "⚠️ Crave run failed with exit code $CRAVE_STATUS."
+    send_telegram "🚨 ALERT: Build script failed with exit code ${CRAVE_STATUS}."
+    exit 1
+fi
