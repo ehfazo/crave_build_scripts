@@ -19,7 +19,9 @@ rm -f .crave_bg
 
 # Check if .env file exists
 if [ ! -f ".env" ]; then
-    echo "⚠️ .env file not found!"
+    echo "┌────────────────────────────────────────────────────────────┐"
+    echo "│              ⚠️ .env file not found!                       │"
+    echo "└────────────────────────────────────────────────────────────┘"
     exit 1
 fi
 
@@ -58,7 +60,9 @@ MAX_ATTEMPTS=3
 ATTEMPT=1
 DELAY_TIME="1m"
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-    echo "🚀 Starting remote build queue (Attempt $ATTEMPT of $MAX_ATTEMPTS)..."
+    echo "┌────────────────────────────────────────────────────────────┐"
+    echo "│    🚀 Starting remote build queue (Attempt $ATTEMPT of $MAX_ATTEMPTS)...│"
+    echo "└────────────────────────────────────────────────────────────┘"
     
     # Run the crave command (all output goes to BUILD_LOG)
     crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_run.sh | bash' >> "$BUILD_LOG" 2>&1
@@ -66,11 +70,13 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     CRAVE_STATUS=$?
 
     if [ $CRAVE_STATUS -eq 0 ]; then
-        echo "✅ Crave execution completed successfully!"
+        echo "┌────────────────────────────────────────────────────────────┐"
+        echo "│         ✅ Crave execution completed successfully!         │"
+        echo "└────────────────────────────────────────────────────────────┘"
         break
         
     elif [ $CRAVE_STATUS -eq 130 ]; then
-        ERROR_TEXT="<b>Build Cancelled:</b> User terminated the process manually."
+        ERROR_TEXT="*Build Cancelled:* User terminated the process manually."
         send_telegram "$ERROR_TEXT"
         exit 1
         
@@ -78,27 +84,37 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
         echo "⚠️ Crave run failed or was rejected with exit code $CRAVE_STATUS."
         
         if [ ! -f "$BUILD_LOG" ]; then
-            echo "❌ Log file not found! Unable to verify container execution."
+            echo "┌────────────────────────────────────────────────────────────┐"
+            echo "│   ❌ Log file not found! Unable to verify container exec. │"
+            echo "└────────────────────────────────────────────────────────────┘"
             ERROR_TEXT="🚨 ALERT: Build script failed to start! Check the setup"
             send_telegram "$ERROR_TEXT"
             exit 1
         fi
 
         if grep -q "Setting up workspace" "$BUILD_LOG"; then
-            echo "✅ Container initialized but compilation failed downstream. Logs in $BUILD_LOG"
+            echo "┌────────────────────────────────────────────────────────────┐"
+            echo "│  ✅ Container initialized but compilation failed downstream│"
+            echo "└────────────────────────────────────────────────────────────┘"
             break
         else
-            echo "❌ Rejection or termination detected before container setup!"
+            echo "┌────────────────────────────────────────────────────────────┐"
+            echo "│  ❌ Rejection or termination detected before setup!        │"
+            echo "└────────────────────────────────────────────────────────────┘"
             
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                echo "🕒 Waiting $DELAY_TIME before retrying automatically..."
+                echo "┌────────────────────────────────────────────────────────────┐"
+                echo "│  🕒 Waiting $DELAY_TIME before retrying...                 │"
+                echo "└────────────────────────────────────────────────────────────┘"
                 TERMINATION_TEXT="🚨 ALERT: Build rejected before setup! Retrying attempt $((ATTEMPT + 1))..."
                 send_telegram "$TERMINATION_TEXT"
                     
                 sleep $DELAY_TIME
                 ((ATTEMPT++))
             else
-                echo "❌ All $MAX_ATTEMPTS build attempts have failed."
+                echo "┌────────────────────────────────────────────────────────────┐"
+                echo "│     ❌ All $MAX_ATTEMPTS build attempts have failed.        │"
+                echo "└────────────────────────────────────────────────────────────┘"
                 TERMINATION_TEXT="🚨 ALERT: Build terminated! All ${ATTEMPT} attempts completely exhausted."
                 send_telegram "$TERMINATION_TEXT"
                 break
