@@ -66,10 +66,22 @@ fi
 # Build Queue notification
 send_telegram "$RANDOM_MSG"
 
+# ================= DELAY BEFORE BUILD =================
+START_DELAY=600
+send_telegram "⏳ *Build will start in ${START_DELAY}s* — you have time to push fixes."
+echo "┌────────────────────────────────────────────────────────────┐"
+echo "│  ⏳ Build starts in ${START_DELAY}s. Push fixes now!       │"
+echo "└────────────────────────────────────────────────────────────┘"
+for ((i=START_DELAY; i>0; i-=60)); do
+    echo "  ${i}s remaining..."
+    sleep 60
+done
+sleep $((START_DELAY % 60))
+
 # ================= CRAVE QUEUE & RETRY LOGIC =================
 MAX_ATTEMPTS=3
 ATTEMPT=1
-DELAY_TIME="1m"
+RETRY_DELAY=600
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     echo "┌────────────────────────────────────────────────────────────┐"
     echo "│    🚀 Starting remote build queue (Attempt $ATTEMPT of $MAX_ATTEMPTS)...│"
@@ -115,12 +127,15 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
             
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
                 echo "┌────────────────────────────────────────────────────────────┐"
-                echo "│  🕒 Waiting $DELAY_TIME before retrying...                 │"
+                echo "│  🕒 Waiting ${RETRY_DELAY}s before retrying...                │"
                 echo "└────────────────────────────────────────────────────────────┘"
-                TERMINATION_TEXT="🚨 ALERT: Build rejected before setup! Retrying attempt $((ATTEMPT + 1))..."
+                TERMINATION_TEXT="🚨 ALERT: Build rejected before setup! Retrying attempt $((ATTEMPT + 1)) in ${RETRY_DELAY}s..."
                 send_telegram "$TERMINATION_TEXT"
-                    
-                sleep $DELAY_TIME
+                for ((i=RETRY_DELAY; i>0; i-=60)); do
+                    echo "  ${i}s remaining..."
+                    sleep 60
+                done
+                sleep $((RETRY_DELAY % 60))
                 ((ATTEMPT++))
             else
                 echo "┌────────────────────────────────────────────────────────────┐"
