@@ -5,13 +5,9 @@ ERROR_LOG="crave_error.log"
 BUILD_SCRIPT_URL="https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_build.sh"
 
 # Self-daemonize: if not already in bg, re-launch with nohup
-if [ "$1" != "--daemon" ] && [ ! -f ".crave_bg" ]; then
+if [ "${DAEMONIZED:-0}" = "0" ] && [ ! -f ".crave_bg" ]; then
     touch .crave_bg
-    # Save self to temp file so daemon works with curl | bash too
-    SELF="/tmp/.crave_build.sh"
-    curl -sfL "$BUILD_SCRIPT_URL" -o "$SELF"
-    chmod +x "$SELF"
-    nohup bash "$SELF" --daemon > "$BUILD_LOG" 2> "$ERROR_LOG" &
+    DAEMONIZED=1 nohup bash -c "$(curl -sf "$BUILD_SCRIPT_URL")" > "$BUILD_LOG" 2> "$ERROR_LOG" &
     echo "🚀 Build launched in background (PID $!)"
     echo "📄 Tail logs: tail -f $BUILD_LOG"
     echo "❌ Tail errors: tail -f $ERROR_LOG"
