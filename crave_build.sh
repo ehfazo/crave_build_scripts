@@ -4,19 +4,29 @@ BUILD_LOG="crave_build.log"
 ERROR_LOG="crave_error.log"
 BUILD_SCRIPT_URL="https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_build.sh"
 
-# Self-daemonize: if not already in bg, re-launch with nohup
-if [ "${DAEMONIZED:-0}" = "0" ] && [ ! -f ".crave_bg" ]; then
-    touch .crave_bg
+SENTINEL=".crave_bg"
+
+sentinel_alive() {
+    [ ! -f "$SENTINEL" ] && return 1
+    OLD_PID=$(cat "$SENTINEL" 2>/dev/null)
+    [ -z "$OLD_PID" ] && return 1
+    kill -0 "$OLD_PID" 2>/dev/null && return 0
+    rm -f "$SENTINEL"
+    return 1
+}
+
+if [ "${DAEMONIZED:-0}" = "0" ] && ! sentinel_alive; then
     curl -sfL "$BUILD_SCRIPT_URL" -o /tmp/crave_build_daemon.sh
     chmod +x /tmp/crave_build_daemon.sh
     DAEMONIZED=1 nohup /tmp/crave_build_daemon.sh > "$BUILD_LOG" 2> "$ERROR_LOG" &
+    echo "$!" > "$SENTINEL"
     echo "🚀 Build launched in background (PID $!)"
     echo "📄 Tail logs: tail -f $BUILD_LOG"
     echo "❌ Tail errors: tail -f $ERROR_LOG"
     rm -f /tmp/crave_build_daemon.sh
     exit 0
 fi
-rm -f .crave_bg
+rm -f "$SENTINEL"
 
 # Check if .env file exists
 if [ ! -f ".env" ]; then
