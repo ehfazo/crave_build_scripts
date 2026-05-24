@@ -5,7 +5,8 @@ set -euo pipefail
 
 BUILD_LOG="crave_build.log"
 ERROR_LOG="crave_error.log"
-BUILD_SCRIPT_URL="https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_build.sh"
+# Point launcher to the dedicated daemon script uploaded to the repo
+BUILD_SCRIPT_URL="https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_build_daemon.sh"
 
 SENTINEL=".crave_bg"
 
