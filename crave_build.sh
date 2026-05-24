@@ -30,12 +30,20 @@ if [ "${DAEMONIZED:-0}" = "0" ] && ! sentinel_alive; then
     tmp_daemon=$(mktemp /tmp/crave_build_daemon.XXXXXX)
     if curl --fail --silent --show-error -L "$BUILD_SCRIPT_URL" -o "$tmp_daemon"; then
         chmod +x "$tmp_daemon"
-        DAEMONIZED=1 nohup "$tmp_daemon" > "$BUILD_LOG" 2> "$ERROR_LOG" &
-        echo "$!" > "$SENTINEL"
-        echo "🚀 Build launched in background (PID $!)"
-        echo "📄 Tail logs: tail -f $BUILD_LOG"
-        echo "❌ Tail errors: tail -f $ERROR_LOG"
-        exit 0
+        # If NO_DAEMON is set or we're running interactively, run in foreground.
+        if [ "${NO_DAEMON:-0}" = "1" ] || [ -t 1 ]; then
+            echo "🔎 Running daemon script in foreground"
+            DAEMONIZED=1 bash "$tmp_daemon" > "$BUILD_LOG" 2> "$ERROR_LOG"
+            rm -f "$tmp_daemon" || true
+            exit 0
+        else
+            DAEMONIZED=1 nohup "$tmp_daemon" > "$BUILD_LOG" 2> "$ERROR_LOG" &
+            echo "$!" > "$SENTINEL"
+            echo "🚀 Build launched in background (PID $!)"
+            echo "📄 Tail logs: tail -f $BUILD_LOG"
+            echo "❌ Tail errors: tail -f $ERROR_LOG"
+            exit 0
+        fi
     else
         echo "❌ Failed to download daemon script from $BUILD_SCRIPT_URL" >&2
         rm -f "$tmp_daemon"
