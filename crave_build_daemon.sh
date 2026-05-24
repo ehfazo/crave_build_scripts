@@ -17,8 +17,6 @@ case "$0" in
 esac
 
 echo "$$" > "$SENTINEL"
-# Claim sentinel
-echo "$$" > "$SENTINEL"
 
 # shellcheck disable=SC2317
 
@@ -63,7 +61,7 @@ if curl --fail --silent --show-error -L https://raw.githubusercontent.com/ehfazo
     fi
 fi
 
-if [ "${#MESSAGES[@]:-0}" -gt 0 ]; then
+if [ "${MESSAGES+x}" = "x" ] && [ "${#MESSAGES[@]}" -gt 0 ]; then
     idx=$((RANDOM % ${#MESSAGES[@]}))
     RANDOM_MSG=${MESSAGES[$idx]}
 else
