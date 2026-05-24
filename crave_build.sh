@@ -26,7 +26,7 @@ if [ "${DAEMONIZED:-0}" = "0" ] && ! sentinel_alive; then
     rm -f /tmp/crave_build_daemon.sh
     exit 0
 fi
-rm -f "$SENTINEL"
+trap 'rm -f "$SENTINEL"' EXIT
 
 # Check if .env file exists
 if [ ! -f ".env" ]; then
