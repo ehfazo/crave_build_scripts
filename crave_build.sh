@@ -60,11 +60,6 @@ DELAY_TIME="1m"
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     echo "🚀 Starting remote build queue (Attempt $ATTEMPT of $MAX_ATTEMPTS)..."
     
-    # Set CRAVE_YAML for project resolution (required by crave 0.2-7220)
-    export CRAVE_YAML="settings:
-  project-ids:
-    - 93
-  ignoreClientHostname: true"
     # Run the crave command (all output goes to BUILD_LOG)
     crave run --projectID 93 --no-patch -- 'curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/crave_run.sh | bash' >> "$BUILD_LOG" 2>&1
 
