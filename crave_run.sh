@@ -89,7 +89,6 @@ set -o pipefail
 mka bacon 2>&1 | tee "$BUILD_LOG"
 BUILD_EXIT=${PIPESTATUS[0]}
 
-# ============ POST SCRIPT UPLOADS ============
 if [ ! -f "upload_script.sh" ]; then
     echo "Fetching upload_script.sh"
     curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/config/upload_script.sh -o upload_script.sh
