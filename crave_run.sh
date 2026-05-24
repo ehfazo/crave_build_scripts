@@ -59,6 +59,9 @@ fi
 rm -rf hardware/qcom-caf/common
 git clone https://github.com/sapphire-sm6225/android_hardware_qcom-caf_common.git -b lineage-23.2 hardware/qcom-caf/common
 
+# Symlink kernel headers for generated_kernel_includes
+ln -sf device/xiaomi/creek-kernel kernel/xiaomi/creek
+
 SYNC_END=$(date +%s)
 SYNC_DIFF=$((SYNC_END - SYNC_START))
 
