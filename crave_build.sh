@@ -80,8 +80,14 @@ if curl --fail --silent --show-error -L https://raw.githubusercontent.com/ehfazo
         source "$tmp_msgs"
     fi
 fi
-if [ "${#MESSAGES[@]:-0}" -gt 0 ]; then
-    idx=$((RANDOM % ${#MESSAGES[@]}))
+if [ "${MESSAGES+x}" = "x" ]; then
+    cnt=${#MESSAGES[@]}
+else
+    cnt=0
+fi
+
+if [ "$cnt" -gt 0 ]; then
+    idx=$((RANDOM % cnt))
     RANDOM_MSG=${MESSAGES[$idx]}
 else
     RANDOM_MSG="🔥 Build started for ${DEVICE:-creek}!"
