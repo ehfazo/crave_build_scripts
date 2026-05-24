@@ -1,5 +1,5 @@
 # ================= ON FAIL =================
-if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+if [ "${BUILD_EXIT:-0}" -ne 0 ]; then
     on_fail
 fi
 

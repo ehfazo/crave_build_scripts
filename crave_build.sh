@@ -45,15 +45,15 @@ send_telegram() {
 
 # Fetch and load the funny messages from another file
 curl -sf https://raw.githubusercontent.com/ehfazo/crave_build_scripts/lineage-23.2/config/messages.sh -o messages.sh
-source messages.sh
-
-# Pick a random index
-RANDOM_MSG=${MESSAGES[$RANDOM % ${#MESSAGES[@]}]}
+if [ -f "messages.sh" ]; then
+    source messages.sh
+    RANDOM_MSG=${MESSAGES[$RANDOM % ${#MESSAGES[@]}]}
+else
+    RANDOM_MSG="🔥 Build started for ${DEVICE:-creek}!"
+fi
 
 # Build Queue notification
 send_telegram "$RANDOM_MSG"
-
-rm -f "$BUILD_LOG" "$ERROR_LOG"
 
 # ================= CRAVE QUEUE & RETRY LOGIC =================
 MAX_ATTEMPTS=3

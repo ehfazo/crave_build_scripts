@@ -155,6 +155,88 @@ ${DEVICE} shall be born."
 If it boots, it's a miracle. If it doesn't, it's 'feature'."
 
 "💻 *[NERD]*
-
+ 
 Compiling ${DEVICE} with -O3 and hope.... Mostly hope."
+
+"🧹 *[MAID]*
+ 
+*Dusting off* the ${DEVICE} kernel.
+ 
+_Please make yourself uncomfortable while I clean the compiler trees._"
+
+"🎪 *[CIRCUS]*
+ 
+*Ladies and gentlemen!*
+ 
+Watch as the brave ${DEVICE} builder walks the tightrope of dependency resolution without a net!"
+
+"⚡ *[FRANKENSTEIN]*
+ 
+*It's alive!... maybe.*
+ 
+Stitching together ${PROJECT_VERSION} parts for ${DEVICE}.
+ 
+*Bring out the pitchforks if it bootloops.*"
+
+"🌀 *[MANDELA]*
+ 
+Was ${DEVICE} always this hard to build?
+ 
+Or did we slip into a dimension where nothing compiles on the first try?"
+
+"🎰 *[CASINO]*
+ 
+*Place your bets!*
+ 
+${DEVICE}: ${PROJECT_VERSION}
+ 
+*Over/Under:* 3 build attempts until first boot."
+ 
+"🧭 *[EXPLORER]*
+ 
+*Uncharted waters ahead.*
+ 
+Navigating the treacherous seas of vendor blobs and kernel configs for ${DEVICE}."
+
+"📦 *[IKEA]*
+ 
+*Some assembly required.*
+ 
+Parts: ${PROJECT_VERSION} + ${DEVICE}
+ 
+*Instructions unclear; XML file stuck in the bootloader.*"
+
+"🧟 *[ZOMBIE]*
+ 
+*Grrr... Braaains...*
+ 
+Resurrecting the dead ${DEVICE} tree.
+ 
+Let's see if it walks (or bootloops)."
+
+"🎤 *[KARAOKE]*
+ 
+*♪  Hello from the other side... ♪*
+ 
+${DEVICE} must have compiled a thousand times.
+ 
+But tonight, the errors might be new."
+
+"🧲 *[MAGNET]*
+ 
+*Attracting* all the missing headers for ${DEVICE}.
+ 
+Hopefully nothing ferrous gets stuck in the toolchain."
+
+"🧊 *[ICE AGE]*
+ 
+*Thawing* the ${DEVICE} vendor blobs.
+ 
+_Somewhere, a maintainer is wondering why I didn't use the prebuilt._"
+
+"🌱 *[GREENER]*
+ 
+The grass is always greener on the other ${DEVICE}.
+ 
+Until you try to build it and the AIDL interface breaks."
 )

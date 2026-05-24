@@ -86,6 +86,7 @@ tg_send "🔄 _Synchronization took ${SYNC_TIME}_
 # ================= BUILD RUN =================
 set -o pipefail
 mka bacon 2>&1 | tee "$BUILD_LOG"
+BUILD_EXIT=${PIPESTATUS[0]}
 
 # ============ POST SCRIPT UPLOADS ============
 if [ ! -f "upload_script.sh" ]; then
